@@ -1,0 +1,29 @@
+services:
+  spark-master:
+    image: bde2020/spark-master:3.1.1-hadoop3.2
+    platform: linux/amd64
+    container_name: spark-master
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      - SPARK_LOCAL_IP=0.0.0.0
+      - SPARK_PUBLIC_DNS=100.115.42.51
+      - SPARK_MASTER_OPTS="-Dspark.master.hostname=100.115.42.51 -Dspark.bindAddress=0.0.0.0"
+
+  spark-worker-1:
+    image: bde2020/spark-worker:3.1.1-hadoop3.2
+    platform: linux/amd64
+    container_name: spark-worker-1
+    depends_on:
+      - spark-master
+    ports:
+      - "8082:8081"
+      - "7078:7078"
+    environment:
+      - SPARK_MASTER=spark://100.115.42.51:7077
+      - SPARK_WORKER_PORT=7078
+      - SPARK_PUBLIC_DNS=100.115.42.51
+      - SPARK_WORKER_OPTS="-Dspark.worker.hostname=100.115.42.51 -Dspark.bindAddress=0.0.0.0"
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=2G
